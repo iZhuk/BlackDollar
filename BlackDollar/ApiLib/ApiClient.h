@@ -7,8 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Models.h"
 
 @interface ApiClient : NSObject
-- (void)getCurrenciesWithCompletion:(void (^)(NSArray *currencies, NSError *error))completionHandler;
+- (void)getCurrenciesWithCompletion:(void (^)(NSArray <CurrencyModel *> *currencies, NSError *error))completionHandler;
+- (void)getRatesTodayWithCompletion:(void (^)(NSArray *rates, NSError *error))completionHandler;
 - (void)getAveragesWithCompletion:(void (^)(NSArray *currencies, NSError *error))completionHandler;
 @end

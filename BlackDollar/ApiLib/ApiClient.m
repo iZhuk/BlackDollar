@@ -7,6 +7,7 @@
 //
 
 #import "ApiClient.h"
+#import "NSArray+Mapping.h"
 
 const NSString *domain = @"https://hryvna-today.p.mashape.com/";
 const NSString *apiKey = @"2SzC5G9HmJmshiLM19AkBE6zW8khp1v5M5bjsncF5c3NKOy8Jo";
@@ -15,24 +16,36 @@ const NSString *apiVersion = @"v1";
 
 const NSString *getCurrenciesPath = @"/list/currencies";
 const NSString *getAveragesPath = @"/rates/averages";
+const NSString *getRatesTodayPath = @"/rates/today";
 
 @implementation ApiClient
 - (void)getAveragesWithCompletion:(void (^)(NSArray *averages, NSError *error))completionHandler {
     [self performRequestWithApiPath:getAveragesPath parameters:nil withComplition:^(NSDictionary *response, NSError *error) {
-        if (error) {
-            NSLog(@"Fail: %@", error);
-        } else {
-            NSLog(@"SUCCESS: %@", response);
+        
+    }];
+}
+
+- (void)getRatesTodayWithCompletion:(void (^)(NSArray *rates, NSError *error))completionHandler {
+    [self performRequestWithApiPath:getRatesTodayPath parameters:nil withComplition:^(NSDictionary *response, NSError *error) {
+        if (completionHandler) {
+            if (!error) {
+                completionHandler(response, nil);
+            } else {
+                completionHandler(nil, error);
+            }
         }
     }];
 }
 
-- (void)getCurrenciesWithCompletion:(void (^)(NSArray *currencies, NSError *error))completionHandler {
+- (void)getCurrenciesWithCompletion:(void (^)(NSArray <CurrencyModel *> *currencies, NSError *error))completionHandler {
     [self performRequestWithApiPath:getCurrenciesPath parameters:nil withComplition:^(NSDictionary *response, NSError *error) {
-        if (error) {
-            NSLog(@"Fail: %@", error);
-        } else {
-            NSLog(@"SUCCESS: %@", response);
+        if (completionHandler) {
+            if (!error) {                
+                NSArray *currencies = response[@"data"];
+                completionHandler([currencies map:^id(id original) { return [[CurrencyModel alloc] initWithDictionary:original]; }], nil);
+            } else {
+                completionHandler(nil, error);
+            }
         }
     }];
 }
